@@ -1,0 +1,22 @@
+# .semaphore/release-notes.yml
+
+version: v1.0
+name: Release Notes Agent
+
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+
+blocks:
+  - name: Generate Release Notes
+    task:
+      secrets:
+        - name: release-agent-secrets
+      jobs:
+        - name: Create Notes
+          commands:
+            - checkout
+            - npm install
+            - npx tsx src/release.ts
+    dependencies: []
