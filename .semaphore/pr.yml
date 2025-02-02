@@ -1,0 +1,30 @@
+# .semaphore/semaphore.yml
+
+version: v1.0
+name: Code Review Agent
+
+# Machine type for the CI agent
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu2004
+
+# Optional: Use global_job_config if you want to check out automatically in every job
+global_job_config:
+  prologue:
+    commands:
+      - checkout
+      - npm install
+
+blocks:
+  - name: PR Review
+    task:
+      # Connect secrets (containing OPENAI_API_KEY, GITHUB_TOKEN, etc.)
+      secrets:
+        - name: pr-review-secrets
+      jobs:
+        - name: Review Pull Request
+          commands:
+            # The environment variables are automatically injected from the secret
+            - npx tsx src/pr.ts 1
+    dependencies: []
