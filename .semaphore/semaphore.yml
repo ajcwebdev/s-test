@@ -1,6 +1,4 @@
 # .semaphore/semaphore.yml
-# Updated example config (renamed usage) to run on every commit push,
-# reviewing each commit in the SEMAPHORE_GIT_COMMIT_RANGE (or single commit).
 
 version: v1.0
 name: Code Review Agent
@@ -17,15 +15,14 @@ global_job_config:
       - npm install
 
 blocks:
-  - name: Commit Review
+  - name: PR Review
     task:
       # Connect secrets (containing OPENAI_API_KEY, GITHUB_TOKEN, etc.)
       secrets:
         - name: pr-review-secrets
       jobs:
-        - name: Review Commits
+        - name: Review Pull Request
           commands:
-            # SEMAPHORE_GIT_COMMIT_RANGE or SEMAPHORE_GIT_SHA is automatically
-            # provided by Semaphore. We'll just invoke our script.
-            - npx tsx src/commit.ts
+            # The environment variables are automatically injected from the secret
+            - npx tsx src/pr.ts
     dependencies: []
