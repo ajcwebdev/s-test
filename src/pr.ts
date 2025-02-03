@@ -5,7 +5,7 @@ import { generateText, tool } from 'ai'
 import { z } from 'zod'
 
 // Read environment variables for GitHub owner and repo
-const { GITHUB_OWNER, GITHUB_REPO, GITHUB_TOKEN } = process.env
+const { GITHUB_OWNER, GITHUB_REPO, GITHUB_TOKEN, SEMAPHORE_GIT_PR_NUMBER } = process.env
 
 if (!GITHUB_OWNER) {
   throw new Error('Environment variable GITHUB_OWNER is not set.')
@@ -83,17 +83,21 @@ async function runCodeReview(pullNumber: number) {
   }
 }
 
-// 3. Read the pull request number from CLI args, then run the agent
-const arg = process.argv[2]
-if (!arg) {
-  console.error('Usage: npx tsx --env-file=.env src/pr.ts <pull-number>')
-  process.exit(1)
-}
+// // 3. Read the pull request number from CLI args, then run the agent
+// const arg = process.argv[2]
+// if (!arg) {
+//   console.error('Usage: npx tsx --env-file=.env src/pr.ts <pull-number>')
+//   process.exit(1)
+// }
 
-const pullNumber = parseInt(arg, 10)
+// const pullNumber = parseInt(arg, 10)
+// if (isNaN(pullNumber)) {
+//   console.error(`Invalid pull request number: ${arg}`)
+//   process.exit(1)
+// }
+
+const pullNumber = parseInt(SEMAPHORE_GIT_PR_NUMBER || '', 10)
 if (isNaN(pullNumber)) {
-  console.error(`Invalid pull request number: ${arg}`)
-  process.exit(1)
+  throw new Error('Invalid or missing pull request number.')
 }
-
 runCodeReview(pullNumber)
